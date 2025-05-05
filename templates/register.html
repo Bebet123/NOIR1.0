@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <title>Registrazione</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark">
+
+<header>
+    <a href="/" class="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+    </a>
+</header>
+
+<div class="form-container">
+    <h2>Registrazione</h2>
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+        <input type="text" name="username" placeholder="Scegli un nome utente" required>
+        <input type="password" name="password" placeholder="Scegli una password" required>
+        <button type="submit">Registrati</button>
+    </form>
+    <p>Hai già un account? <a href="{{ url_for('login') }}">Accedi</a></p>
+</div>
+
+</body>
+</html>

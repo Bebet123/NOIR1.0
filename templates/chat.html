@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <title>NOIR CHAT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body class="dark">
+
+    <!-- Header -->
+    <header>
+        <a href="/" class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+        </a>
+        <div class="auth">
+            {% if session.username %}
+                <span>{{ session.username }}</span>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Registrazione</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Main chat -->
+    <div class="chat-container">
+        <aside>
+            <form action="{{ url_for('add_contact') }}" method="post">
+                <input type="text" name="contact" placeholder=" nuovo contatto" required>
+                <button type="submit">➕</button>
+            </form>
+            <ul id="contacts">
+                {% for contact in contacts %}
+                    <li class="contact" onclick="selectContact('{{ contact.contact }}')" {% if loop.first %}id="default-contact"{% endif %}>
+                        {{ contact.contact }}
+                    </li>
+                {% endfor %}
+            </ul>
+           
+                {% if error %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endif %}
+                
+                <!-- resto del contenuto -->
+            
+         
+
+        </aside>
+
+        <main>
+            <div id="messages"></div>
+            <form id="message-form">
+                <input type="text" id="message-input" placeholder="Scrivi un messaggio..." autocomplete="off" required>
+                <button type="submit">invia</button>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        const USERNAME_FROM_TEMPLATE = "{{ session.username }}";
+    </script>
+    <script src="{{ url_for('static', filename='client.js') }}"></script>
+</body>
+</html>

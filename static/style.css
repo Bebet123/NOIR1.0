@@ -1,0 +1,174 @@
+body.dark {
+    background-color: #121212;
+    color: #f0f0f0;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+header {
+    background: #1e1e1e;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo img {
+    height: 40px;
+}
+
+header .auth a, header .auth span {
+    margin-left: 15px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.chat-container {
+    display: flex;
+    height: calc(100vh - 60px);
+}
+
+aside {
+    width: 220px;
+    background: #222;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+aside form {
+    display: flex;
+}
+
+aside input {
+    flex: 1;
+    padding: 5px;
+}
+
+aside button {
+    padding: 5px;
+}
+
+.contact {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+#message-form {
+    display: flex;
+}
+
+#message-input {
+    flex: 1;
+    padding: 8px;
+    background: #1c1c1c;
+    border: none;
+    color: white;
+}
+
+#message-form button {
+    padding: 8px 12px;
+    background: #444;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+.form-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 20px;
+    background: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #000;
+}
+
+.form-container h2 {
+    text-align: center;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container input,
+.form-container button {
+    margin: 8px 0;
+    padding: 10px;
+    background: #2b2b2b;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+.form-container button {
+    background: #444;
+    cursor: pointer;
+}
+
+.form-container .error {
+    color: red;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1c1c1c;
+    color: white;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+}
