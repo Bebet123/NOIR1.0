@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, emit, join_room
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import eventlet
-import socket
+
 
 from flask import jsonify
 app = Flask(__name__)
@@ -32,8 +32,8 @@ def init_db():
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        public_key TEXT
+        password TEXT NOT NULL
+        
     )""")
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS messages (
@@ -53,8 +53,7 @@ def init_db():
     )""")
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS private_keys (
-    user TEXT PRIMARY KEY,
-    encrypted_key TEXT NOT NULL
+    user TEXT PRIMARY KEY
     )""")
    
     db.commit()
@@ -71,21 +70,19 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         password = generate_password_hash(request.form['password'])
-        public_key = request.form['public_key']  # ← nuova chiave
         db = get_db()
         try:
-            db.execute("INSERT INTO users (username, password, public_key) VALUES (?, ?, ?)",
-                       (username, password, public_key))
+            db.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
             db.commit()
+            session['username'] = username
+            return redirect(url_for('chat'))
         except sqlite3.IntegrityError:
-            return "Username esistente."
-        session['username'] = username
-        return redirect(url_for('chat'))
-    return render_template('register.html')
-
+            error = "Username già esistente."
+    return render_template('register.html', error=error)
 
 
 @app.route('/login', methods=['GET', 'POST'])

@@ -52,12 +52,16 @@
         </aside>
 
         <main>
-            <div id="messages"></div>
-            <form id="message-form">
+            <div id="messages" style="display: none;"></div>
+            <div id="no-chat" style="text-align: center; color: white; margin-top: 100px;">
+                <p>Seleziona una chat per iniziare</p>
+            </div>
+            <form id="message-form" style="display: none;">
                 <input type="text" id="message-input" placeholder="Scrivi un messaggio..." autocomplete="off" required>
                 <button type="submit">invia</button>
             </form>
         </main>
+        
     </div>
 
     <script>

@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function selectContact(contact) {
     currentContact = contact;
     updateNotification(contact, false);
+    
+        document.getElementById("no-chat").style.display = "none";
+        document.getElementById("messages").style.display = "block";
+        document.getElementById("message-form").style.display = "flex";
+    
+       
+    
     document.getElementById('messages').innerHTML = '';
 
     if (messages[contact]) {
@@ -104,3 +111,18 @@ function playNotification() {
         notificationSound.play().catch(err => console.warn("Audio non riprodotto:", err));
     }
 }
+
+
+function selectChat(chatId) {
+    // logica per caricare i messaggi
+    document.getElementById("chat-box").classList.remove("hidden");
+    document.getElementById("no-chat-message").style.display = "none";
+}
+
+// All'avvio (nessuna chat selezionata)
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("chat-box").classList.add("hidden");
+    document.getElementById("no-chat-message").style.display = "block";
+});
+
+

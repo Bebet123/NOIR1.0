@@ -1,10 +1,17 @@
-body.dark {
-    background-color: #121212;
-    color: #f0f0f0;
+/* RESET E BASE */
+* {
     margin: 0;
-    font-family: sans-serif;
+    padding: 0;
+    box-sizing: border-box;
 }
 
+body, html {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #f0f0f0;
+}
+
+/* HEADER */
 header {
     background: #1e1e1e;
     padding: 10px 20px;
@@ -23,29 +30,43 @@ header .auth a, header .auth span {
     text-decoration: none;
 }
 
+/* CONTAINER PRINCIPALE */
 .chat-container {
     display: flex;
     height: calc(100vh - 60px);
 }
 
+/* SIDEBAR */
 aside {
     width: 220px;
     background: #222;
     padding: 10px;
     overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
 }
 
 aside form {
     display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 aside input {
     flex: 1;
     padding: 5px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 4px;
 }
 
 aside button {
     padding: 5px;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .contact {
@@ -54,6 +75,7 @@ aside button {
     cursor: pointer;
 }
 
+/* MAIN CHAT */
 main {
     flex: 1;
     display: flex;
@@ -69,6 +91,7 @@ main {
 
 #message-form {
     display: flex;
+    gap: 8px;
 }
 
 #message-input {
@@ -77,6 +100,7 @@ main {
     background: #1c1c1c;
     border: none;
     color: white;
+    border-radius: 4px;
 }
 
 #message-form button {
@@ -85,7 +109,10 @@ main {
     border: none;
     color: white;
     cursor: pointer;
+    border-radius: 4px;
 }
+
+/* FORM DI LOGIN/REGISTRAZIONE */
 .form-container {
     max-width: 400px;
     margin: 80px auto;
@@ -125,50 +152,22 @@ main {
     text-align: center;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* CHAT NON SELEZIONATA */
+#chat-box.hidden {
+    display: none;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #1c1c1c;
-    color: white;
+.hidden {
+    display: none;
 }
 
-.container {
+#no-chat {
     display: flex;
-    flex-direction: row;
-    height: 100vh;
-}
-
-.sidebar {
-    width: 250px;
-    background-color: #333;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 1.3rem;
     color: white;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    text-align: center;
 }
 
-.main-content {
-    flex-grow: 1;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        height: auto;
-    }
-
-    .main-content {
-        width: 100%;
-    }
-}
