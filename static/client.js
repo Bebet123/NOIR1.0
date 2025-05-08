@@ -59,6 +59,7 @@ socket.on('private_message', data => {
 
     if (currentContact === sender) {
         appendMessage(sender, message);
+        playNotification();
     } else {
         updateNotification(sender, true);
         playNotification();  // Riproduce la notifica
@@ -124,5 +125,4 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("chat-box").classList.add("hidden");
     document.getElementById("no-chat-message").style.display = "block";
 });
-
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <title>Profilo Utente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark">
+    <header>
+        <a href="/" class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+        </a>
+    </header>
+<div class="user-page-container">
+    <div class="user-card">
+        <img class="user-avatar-large" src="{{ url_for('static', filename='default-user.png') }}" alt="Avatar">
+        <h2 class="username">{{ session.username }}</h2>
+
+        <div class="user-actions">
+            <a href="{{ url_for('chat') }}" class="back-btn">⬅ Torna alla chat</a>
+
+            <form action="{{ url_for('logout') }}" method="get">
+                <button class="logout-btn" type="submit">Logout</button>
+            </form>
+        </div>
+
+        <h3 style="margin-top: 30px;">I tuoi contatti</h3>
+        <ul class="contact-list">
+            {% for contact in contacts %}
+                <li>
+                    {{ contact.contact }}
+                    <form style="display:inline;" method="post" action="{{ url_for('delete_contact') }}">
+                        <input type="hidden" name="contact" value="{{ contact.contact }}">
+                        <button type="submit" class="delete-btn">❌</button>
+                    </form>
+                </li>
+            {% else %}
+                <li><em>Nessun contatto salvato.</em></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

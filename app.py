@@ -210,8 +210,7 @@ def handle_private(data):
         db.execute("INSERT INTO contacts (user, contact) VALUES (?, ?)", (receiver, sender))
     except sqlite3.IntegrityError:
         pass
-    if receiver in online_users:
-        emit('private_message', {'sender': sender, 'message': message}, room=receiver)
+    
 
     # Notifica il ricevente che ha un nuovo contatto
     emit('new_contact', {'contact': sender}, room=receiver)
@@ -231,8 +230,27 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
+@app.route('/utente')
+def utente():
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
+    db = get_db()
+    contacts = db.execute('SELECT contact FROM contacts WHERE user = ?', (session['username'],)).fetchall()
+    return render_template('utente.html', contacts=contacts)
 
+@app.route('/delete_contact', methods=['POST'])
+def delete_contact():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    contact = request.form.get('contact')
+    if contact:
+        db = get_db()
+        db.execute('DELETE FROM contacts WHERE user = ? AND contact = ?', (session['username'], contact))
+        db.commit()
+
+    return redirect(url_for('chat'))
 
 if __name__ == '__main__':
     init_db()

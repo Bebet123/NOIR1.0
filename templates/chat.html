@@ -8,24 +8,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
 </head>
-<body class="dark">
 
+<body class="dark">
+    <div id="overlay" class="hidden"></div>
     <!-- Header -->
     <header>
         <a href="/" class="logo">
             <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
         </a>
+        <button class="menu-toggle" onclick="toggleMenu()">☰ Contatti</button>
         <div class="auth">
             {% if session.username %}
-                <span>{{ session.username }}</span>
-                <a href="{{ url_for('logout') }}">Logout</a>
+                
+                <a href="{{ url_for('utente') }}" class="user-avatar">
+                    <img src="{{ url_for('static', filename='default-user.png') }}" alt="Utente">
+                
+                </a>
+                <div>{{ session.username }}</div>
             {% else %}
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('register') }}">Registrazione</a>
             {% endif %}
         </div>
+        
     </header>
-
+    
     <!-- Main chat -->
     <div class="chat-container">
         <aside>
@@ -46,10 +53,9 @@
                 {% endif %}
                 
                 <!-- resto del contenuto -->
-            
-         
-
+    
         </aside>
+        
 
         <main>
             <div id="messages" style="display: none;"></div>
@@ -63,10 +69,26 @@
         </main>
         
     </div>
-
+    <script>
+        function toggleMenu() {
+            const aside = document.querySelector("aside");
+            const overlay = document.getElementById("overlay");
+    
+            aside.classList.toggle("show");
+            overlay.classList.toggle("show");
+        }
+    
+        // Chiudi il menu cliccando fuori (su overlay)
+        document.getElementById("overlay").addEventListener("click", () => {
+            document.querySelector("aside").classList.remove("show");
+            document.getElementById("overlay").classList.remove("show");
+        });
+    </script>
+    
     <script>
         const USERNAME_FROM_TEMPLATE = "{{ session.username }}";
     </script>
     <script src="{{ url_for('static', filename='client.js') }}"></script>
 </body>
+
 </html>
