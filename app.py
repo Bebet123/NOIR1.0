@@ -33,6 +33,9 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
+        encrypted_private_key TEXT,
+        iv TEXT,     
+        salt TEXT
         
     )""")
     cursor.execute("""
@@ -41,6 +44,7 @@ def init_db():
         sender TEXT NOT NULL,
         receiver TEXT NOT NULL,
         message TEXT NOT NULL,
+        encrypted INTEGER DEFAULT 0,
         delivered BOOLEAN DEFAULT 0,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )""")
@@ -51,10 +55,7 @@ def init_db():
         contact TEXT NOT NULL,
         UNIQUE(user, contact)
     )""")
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS private_keys (
-    user TEXT PRIMARY KEY
-    )""")
+
    
     db.commit()
     db.close()
