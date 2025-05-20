@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Seguro - {{ room }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Sala: {{ room }}</h1>
+            <p>Usuario: <span id="current-user">{{ username }}</span></p>
+            <button id="leave-btn" class="btn btn-danger">Salir</button>
+        </div>
+        
+        <div class="chat-area">
+            <div class="users-list">
+                <h3>Usuarios en línea</h3>
+                <ul id="users"></ul>
+            </div>
+            
+            <div class="messages-area">
+                <div id="messages" class="messages"></div>
+                
+                <form id="message-form" class="message-form">
+                    <input type="text" id="message" placeholder="Escribe un mensaje..." autocomplete="off" required>
+                    <button type="submit" class="btn">Enviar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Datos del usuario y sala
+            const username = "{{ username }}";
+            const room = "{{ room }}";
+            
+            // Recuperar claves de localStorage
+            const privateKey = localStorage.getItem('chatRsaPrivateKey');
+            const publicKey = localStorage.getItem('chatRsaPublicKey');
+            
+            if (!privateKey || !publicKey) {
+                alert('No se encontraron las claves RSA. Vuelve a la página principal.');
+                window.location.href = '/';
+                return;
+            }
+            
+            // Configurar socket.io
+            const socket = io();
+            
+            // Almacén para las claves públicas de otros usuarios
+            const userPublicKeys = {};
+            
+            // Inicializar JSEncrypt para encriptar/desencriptar
+            const decryptor = new JSEncrypt();
+            decryptor.setPrivateKey(privateKey);
+            
+            // Al conectarse al socket
+            socket.on('connect', function() {
+                // Unirse a la sala de chat
+                socket.emit('join', {
+                    username: username,
+                    room: room,
+                    publicKey: publicKey
+                });
+            });
+            
+            // Cuando un usuario se une a la sala
+            socket.on('user_join', function(data) {
+                updateUsersList(data.users);
+                
+                // Actualizar las claves públicas
+                for (const [user, key] of Object.entries(data.publicKeys)) {
+                    userPublicKeys[user] = key;
+                }
+                
+                if (data.username !== username) {
+                    addSystemMessage(`${data.username} se ha unido al chat`);
+                }
+            });
+            
+            // Cuando un usuario abandona la sala
+            socket.on('user_leave', function(data) {
+                if (data.username !== username) {
+                    addSystemMessage(`${data.username} ha abandonado el chat`);
+                }
+                
+                // Solicitar lista actualizada de usuarios
+                socket.emit('request_users', { room: room });
+            });
+            
+            // Recibir lista de usuarios
+            socket.on('users_list', function(data) {
+                updateUsersList(data.users);
+                
+                // Actualizar las claves públicas
+                for (const [user, key] of Object.entries(data.publicKeys)) {
+                    userPublicKeys[user] = key;
+                }
+            });
+            
+            // Recibir historial de mensajes
+            socket.on('message_history', function(messages) {
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML = '';
+                
+                messages.forEach(function(msg) {
+                    displayMessage(msg);
+                });
+                
+                // Scroll hasta el último mensaje
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+            
+            // Recibir un nuevo mensaje
+            socket.on('receive_message', function(msg) {
+                displayMessage(msg);
+                
+                // Scroll hasta el último mensaje
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+            
+            // Manejar el envío de mensajes
+            document.getElementById('message-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const messageInput = document.getElementById('message');
+                const messageText = messageInput.value.trim();
+                
+                if (!messageText) return;
+                
+                // Encriptar mensaje para cada destinatario
+                const encryptedMessages = {};
+                
+                for (const [user, publicKey] of Object.entries(userPublicKeys)) {
+                    const encryptor = new JSEncrypt();
+                    encryptor.setPublicKey(publicKey);
+                    
+                    // Encriptar el mensaje para este usuario
+                    const encrypted = encryptor.encrypt(messageText);
+                    if (encrypted) {
+                        encryptedMessages[user] = encrypted;
+                    }
+                }
+                
+                // Enviar mensaje encriptado
+                socket.emit('send_message', {
+                    room: room,
+                    sender: username,
+                    encryptedMessages: encryptedMessages,
+                    timestamp: Date.now()
+                });
+                
+                // Limpiar el campo de entrada
+                messageInput.value = '';
+            });
+            
+            // Manejar salida del chat
+            document.getElementById('leave-btn').addEventListener('click', function() {
+                socket.emit('leave', {
+                    username: username,
+                    room: room
+                });
+                
+                window.location.href = '/';
+            });
+            
+            // Actualizar la lista de usuarios
+            function updateUsersList(users) {
+                const usersList = document.getElementById('users');
+                usersList.innerHTML = '';
+                
+                users.forEach(function(user) {
+                    const li = document.createElement('li');
+                    li.textContent = user;
+                    if (user === username) {
+                        li.classList.add('current-user');
+                    }
+                    usersList.appendChild(li);
+                });
+            }
+            
+            // Mostrar mensaje en el chat
+            function displayMessage(msg) {
+                const messagesDiv = document.getElementById('messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                
+                if (msg.sender === username) {
+                    messageDiv.classList.add('own-message');
+                }
+                
+                // Intentar desencriptar el mensaje si está dirigido a este usuario
+                let messageText = 'Mensaje cifrado';
+                
+                if (msg.encryptedMessages && msg.encryptedMessages[username]) {
+                    const encrypted = msg.encryptedMessages[username];
+                    const decrypted = decryptor.decrypt(encrypted);
+                    
+                    if (decrypted) {
+                        messageText = decrypted;
+                    }
+                }
+                
+                // Formatear fecha
+                const timestamp = new Date(msg.timestamp);
+                const timeStr = timestamp.toLocaleTimeString();
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <span class="sender">${msg.sender}</span>
+                        <span class="time">${timeStr}</span>
+                    </div>
+                    <div class="message-content">${messageText}</div>
+                `;
+                
+                messagesDiv.appendChild(messageDiv);
+            }
+            
+            // Añadir mensaje del sistema
+            function addSystemMessage(text) {
+                const messagesDiv = document.getElementById('messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'system-message');
+                
+                messageDiv.innerHTML = `
+                    <div class="message-content">${text}</div>
+                `;
+                
+                messagesDiv.appendChild(messageDiv);
+                
+                // Scroll hasta el último mensaje
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>

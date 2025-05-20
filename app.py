@@ -33,9 +33,7 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
-        encrypted_private_key TEXT,
-        iv TEXT,     
-        salt TEXT
+        
         
     )""")
     cursor.execute("""
