@@ -1,12 +1,38 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_socketio import SocketIO, emit, join_room
 from werkzeug.security import generate_password_hash, check_password_hash
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad, unpad
+import base64
 import sqlite3
 import eventlet
 
 
 from flask import jsonify
 app = Flask(__name__)
+
+
+with open("keys.txt", "r", encoding="utf-8") as file:
+    contenuto = file.read()
+
+dbkey = bytes(contenuto.encode('UTF-8'))
+
+# Funzione per criptare
+def cripta_aes(chiave: bytes, testo: str) -> str:
+    iv = get_random_bytes(16)  # Initialization vector (16 byte)
+    cipher = AES.new(chiave, AES.MODE_CBC, iv)
+    dati_criptati = cipher.encrypt(pad(testo.encode(), AES.block_size))
+    return base64.b64encode(iv + dati_criptati).decode()
+
+# Funzione per decriptare
+def decripta_aes(chiave: bytes, testo_criptato: str) -> str:
+    dati = base64.b64decode(testo_criptato)
+    iv = dati[:16]
+    dati_criptati = dati[16:]
+    cipher = AES.new(chiave, AES.MODE_CBC, iv)
+    return unpad(cipher.decrypt(dati_criptati), AES.block_size).decode()
+
 app.secret_key = 'supersegreto'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -42,7 +68,6 @@ def init_db():
         sender TEXT NOT NULL,
         receiver TEXT NOT NULL,
         message TEXT NOT NULL,
-        encrypted INTEGER DEFAULT 0,
         delivered BOOLEAN DEFAULT 0,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )""")
@@ -111,7 +136,7 @@ def history(contact):
         WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)
         ORDER BY timestamp ASC
     """, (user, contact, contact, user)).fetchall()
-    return [{'sender': m['sender'], 'message': m['message'], 'timestamp': m['timestamp']} for m in msgs]
+    return [{'sender': m['sender'], 'message': decripta_aes(dbkey,m['message']), 'timestamp': m['timestamp']} for m in msgs]
 
 
 @app.route('/chat')
@@ -216,7 +241,7 @@ def handle_private(data):
 
 
     # Salva il messaggio
-    db.execute("INSERT INTO messages (sender, receiver, message) VALUES (?, ?, ?)", (sender, receiver, message))
+    db.execute("INSERT INTO messages (sender, receiver, message) VALUES (?, ?, ?)", (sender, receiver, cripta_aes(dbkey,message)))
     db.commit()
 
     # Invia se online

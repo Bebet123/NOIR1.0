@@ -3,6 +3,7 @@ from Crypto.Cipher import AES
 
 data = b'messaggio segretessimo scemo chi legge'
 
+dbkey = "chiavatasegretaa"
 
 def temp(_str):
     if(len(_str) > 16):
@@ -19,7 +20,7 @@ def temp(_str):
 keystr = (temp("key"))
 
 
-key = bytes(keystr.encode('UTF-8'))
+key = bytes(dbkey.encode('UTF-8'))
 print(key)
 
 cipher = AES.new(key, AES.MODE_EAX)
@@ -34,3 +35,6 @@ cipher = AES.new(key, AES.MODE_EAX, nonce)
 data = cipher.decrypt_and_verify(ciphertext, tag)
 
 print(str(data.decode('UTF-8')))
+
+def cripta(testo):
+    

@@ -24,7 +24,8 @@
                     <img src="{{ url_for('static', filename='default-user.png') }}" alt="Utente">
                 
                 </a>
-                <div>{{ session.username }}</div>
+                <div class = "usernamee">{{ session.username }}</div>
+                
             {% else %}
                 <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('register') }}">Registrazione</a>
