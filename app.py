@@ -34,7 +34,7 @@ def decripta_aes(chiave: bytes, testo_criptato: str) -> str:
     return unpad(cipher.decrypt(dati_criptati), AES.block_size).decode()
 
 app.secret_key = 'supersegreto'
-socketio = SocketIO(app, cors_allowed_origins='*')
+socketio = SocketIO(app, cors_allowed_origins='*' ,async_mode='threading')
 
 # In-memory map: username -> socket sid
 online_users = {}

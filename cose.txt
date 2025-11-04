@@ -1,0 +1,6 @@
+Flask==3.0.0
+Flask-SocketIO==5.3.5
+Werkzeug==3.0.1
+pycryptodome==3.19.0
+eventlet==0.35.2
+python-socketio==5.10.0

@@ -126,3 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("no-chat-message").style.display = "block";
 });
 
+const messageDiv = document.createElement('div');
+messageDiv.className = isSent ? 'message sent' : 'message received';
+messageDiv.innerHTML = `
+    ${!isSent ? `<div class="sender">${sender}</div>` : ''}
+    <div class="text">${text}</div>
+    <div class="time">${time}</div>
+`;

@@ -28,21 +28,30 @@
 </div>
 
 <script>
-    // Verifica che le password corrispondano prima di inviare il form
-    document.querySelector('form').addEventListener('submit', function(event) {
-        const password = document.querySelector('input[name="password"]').value;
-        const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
-        
-        if (password !== confirmPassword) {
-            event.preventDefault();
-            alert('Le password non corrispondono!');
-        }
-        
-        if (password.length < 8) {
-            event.preventDefault();
-            alert('La password deve essere lunga almeno 8 caratteri!');
-        }
-    });
+document.querySelector('form').addEventListener('submit', function(event) {
+    const password = document.querySelector('input[name="password"]').value;
+    const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
+    
+    if (password !== confirmPassword) {
+        event.preventDefault();
+        showError('Le password non corrispondono!');
+        return;
+    }
+    
+    if (password.length < 8) {
+        event.preventDefault();
+        showError('La password deve essere lunga almeno 8 caratteri!');
+    }
+});
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error';
+    errorDiv.textContent = message;
+    const form = document.querySelector('form');
+    form.insertBefore(errorDiv, form.firstChild);
+    setTimeout(() => errorDiv.remove(), 3000);
+}
 </script>
 </body>
 </html>

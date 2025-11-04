@@ -4,80 +4,34 @@
     <meta charset="UTF-8">
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noir Chat</title>
+    <title>Noir Chat - Chat Crittografata Sicura</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Stili base per la landing page */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #1c1c1c;
-            color: #fff;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .description {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            text-align: center;
-            max-width: 500px;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 20px;
-        }
-
-        .btn {
-            background-color: #ff6f61;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #e14a3f;
-        }
-
-        .logo {
-            max-width: 150px;
-            margin-bottom: 30px;
-        }
-    </style>
 </head>
-<body>
-    <!-- Aggiunto il link alla route 'index' attorno al logo -->
-    <a href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+<body class="landing-page">
+    <!-- Logo con link -->
+    <a href="{{ url_for('index') }}" class="landing-logo-link">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Noir Chat Logo" class="landing-logo">
     </a>
     
-    <!-- Titolo della pagina -->
-    <h1>Benvenuto a Noir Chat</h1>
+    <!-- Titolo principale -->
+    <h1 class="landing-title">NOIR CHAT</h1>
 
-    <!-- Descrizione personalizzata -->
-    <p class="description">
-        Noir chat è una chat cryptata sicura all 100% 
+    <!-- Descrizione -->
+    <p class="landing-description">
+        La chat <strong>crittografata end-to-end</strong> che garantisce privacy e sicurezza al 100%. 
+        I tuoi messaggi, protetti con <strong>crittografia AES-256</strong>.
     </p>
 
-    <!-- Bottoni per Login e Registrazione -->
-    <div class="buttons">
-        <a href="{{ url_for('login') }}" class="btn">Login</a>
-        <a href="{{ url_for('register') }}" class="btn">Registrati</a>
+    <!-- Bottoni CTA -->
+    <div class="landing-buttons">
+        <a href="{{ url_for('login') }}" class="landing-btn landing-btn-primary">
+            <span>Accedi</span>
+        </a>
+        <a href="{{ url_for('register') }}" class="landing-btn landing-btn-secondary">
+            <span>Registrati</span>
+        </a>
     </div>
+
+    
 </body>
 </html>
